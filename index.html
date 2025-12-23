@@ -132,39 +132,8 @@
             <h3>みんなのアンケートに回答して<br>ポイントを貯めよう</h3>
         </div>
 
-        <div class="survey-list">
-            <div class="card">
-                <div class="card-info">
-                    <h3>大学生のSNS利用に関する意識調査</h3>
-                    <div class="tags"><span class="tag">社会学</span> <span class="tag">3分</span></div>
-                </div>
-                <button onclick="answerSurvey(this)">回答する</button>
+        <div class="survey-list" id="survey-list">
             </div>
-            <div class="card">
-                <div class="card-info">
-                    <h3>睡眠時間と学業成績の相関について</h3>
-                    <div class="tags"><span class="tag">心理学</span> <span class="tag">5分</span></div>
-                </div>
-                <button onclick="answerSurvey(this)">回答する</button>
-            </div>
-            <div class="card">
-                <div class="card-info">
-                    <h3>ここに新しいアンケートのタイトル</h3>
-                    <div class="tags">
-                         <span class="tag">経済学</span> 
-                        <span class="tag">1分</span>
-                    </div>
-                </div>
-                <button onclick="answerSurvey(this)">回答する</button>
-            </div>
-            <div class="card">
-                <div class="card-info">
-                    <h3>アルバイトの経験が就活に与える影響</h3>
-                    <div class="tags"><span class="tag">教育学</span> <span class="tag">2分</span></div>
-                </div>
-                <button onclick="answerSurvey(this)">回答する</button>
-            </div>
-        </div>
     </div>
 
   <script>
@@ -216,6 +185,97 @@
             } else {
                 document.getElementById('pointsNeeded').innerText = remaining;
             }
+        }
+    
+        /* --- ここから追加するコード --- */
+
+        // さっきコピーしたスプレッドシートのURL（CSV形式）をここに貼る！
+        const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTV2B6VI-7gldTNOeWGEWFM5gb1NyKMHHvMvypM6MnTLT-S44JffaAIIr_hJsFHz9BvrMUBXB8HuwwE/pub?output=csv";
+
+        // ページが開かれたら、自動でシートを読みに行く
+        window.onload = function() {
+            // ポイント表示の更新（既存機能）
+            let savedPoints = localStorage.getItem('sotsuron_points');
+            if(savedPoints) points = parseInt(savedPoints);
+            updateDisplay();
+
+            // スプレッドシートのデータを取得
+            fetch(sheetUrl)
+                .then(response => response.text())
+                .then(text => {
+                    const rows = parseCSV(text);
+                    const listElement = document.getElementById('survey-list');
+
+                    // 1行目（見出し）は飛ばして、2行目から順にカードを作る
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        // データが足りない行は無視
+                        if (row.length < 4) continue;
+
+                        const title = row[0]; // A列
+                        const tag = row[1];   // B列
+                        const time = row[2];  // C列
+                        const url = row[3];   // D列
+
+                        // カードのHTMLを作る
+                        const cardHTML = `
+                            <div class="card">
+                                <div class="card-info">
+                                    <h3>${title}</h3>
+                                    <div class="tags">
+                                        <span class="tag">${tag}</span>
+                                        <span class="tag">${time}</span>
+                                    </div>
+                                </div>
+                                <button onclick="clickSurvey('${url}', this)">回答する</button>
+                            </div>
+                        `;
+                        // 画面に追加する
+                        listElement.insertAdjacentHTML('beforeend', cardHTML);
+                    }
+                });
+        };
+
+        // 回答ボタンを押した時の処理（ポイント加算 ＋ ページ移動）
+        function clickSurvey(url, btnElement) {
+            if(!confirm("アンケートページへ移動しますか？")) return;
+            
+            // ポイント加算処理
+            points++;
+            localStorage.setItem('sotsuron_points', points);
+            updateDisplay();
+
+            // 別タブでアンケートを開く
+            window.open(url, '_blank');
+        }
+
+        // CSVを正しく分解する便利機能（カンマ区切り対策）
+        function parseCSV(text) {
+            const rows = [];
+            let row = [];
+            let inQuote = false;
+            let currentCell = "";
+            
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i+1];
+
+                if (char === '"') {
+                    if (inQuote && nextChar === '"') { i++; currentCell += '"'; }
+                    else { inQuote = !inQuote; }
+                } else if (char === ',' && !inQuote) {
+                    row.push(currentCell); currentCell = "";
+                } else if ((char === '\r' || char === '\n') && !inQuote) {
+                    if (currentCell || row.length > 0) row.push(currentCell);
+                    if (row.length > 0) rows.push(row);
+                    row = []; currentCell = "";
+                    if (char === '\r' && nextChar === '\n') i++;
+                } else {
+                    currentCell += char;
+                }
+            }
+            if (currentCell || row.length > 0) { row.push(currentCell); rows.push(row); }
+            return rows;
         }
     </script>
 </body>
