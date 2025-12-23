@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sotsuron Swap - 卒論アンケート交換プラットフォーム</title>
     <style>
-        /* ここは「見た目」を決めるCSSという言語です */
+        /* 基本設定（PC・スマホ共通） */
         :root {
             --primary: #4f46e5;
             --bg: #f3f4f6;
@@ -19,6 +19,7 @@
             margin: 0;
             padding: 0;
             line-height: 1.6;
+            padding-top: 80px; /* ヘッダーの高さ分だけ中身を下げる */
         }
         header {
             background-color: white;
@@ -27,17 +28,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
+            position: fixed; /* 常に上に固定 */
             top: 0;
+            left: 0;
+            width: 100%;
+            box-sizing: border-box; /* パディングを含めた幅にする */
+            z-index: 1000; /* 他の要素より手前に表示 */
         }
-        .logo { font-weight: bold; font-size: 1.5rem; color: var(--primary); }
-        .status-bar { font-size: 0.9rem; font-weight: bold; }
-        .point-box { background: var(--primary); color: white; padding: 5px 10px; border-radius: 20px; }
+        .logo { font-weight: bold; font-size: 1.5rem; color: var(--primary); white-space: nowrap; }
+        .status-bar { font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; }
+        .point-box { background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; margin-left: 10px; white-space: nowrap; }
         
-        .container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
-        .hero { text-align: center; margin-bottom: 3rem; }
-        .hero h1 { margin-bottom: 0.5rem; }
-        .hero p { color: #6b7280; }
+        .container { max-width: 800px; margin: 0 auto; padding: 1rem; }
+        .hero { text-align: center; margin-bottom: 2rem; padding-top: 1rem;}
+        .hero h3 { margin: 0; color: #4b5563; }
         
         .survey-list { display: grid; gap: 1rem; }
         .card {
@@ -63,16 +67,48 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            white-space: nowrap; /* ボタンの文字を折り返さない */
+            min-width: 100px; /* ボタンの最小幅を確保 */
         }
         button:hover { opacity: 0.9; }
         button:disabled { background-color: #ccc; cursor: not-allowed; }
 
         .my-post-area {
             background: #e0e7ff;
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 12px;
             text-align: center;
             margin-bottom: 2rem;
+        }
+
+        /* --------------------------------------
+           ここが重要！スマホ用のルール（レスポンシブ対応）
+           画面幅が600px以下の時だけ適用されます
+           -------------------------------------- */
+        @media (max-width: 600px) {
+            header {
+                padding: 0.8rem 1rem;
+                flex-direction: column; /* 縦並びにする */
+                gap: 10px;
+                height: auto;
+            }
+            body {
+                padding-top: 110px; /* ヘッダーが縦に伸びた分、中身をもっと下げる */
+            }
+            .logo { font-size: 1.3rem; }
+            
+            .card {
+                flex-direction: column; /* カードの中身も縦並びにする */
+                align-items: flex-start; /* 左寄せにする */
+            }
+            .card-info {
+                margin-bottom: 1rem;
+                width: 100%;
+            }
+            .card button {
+                width: 100%; /* スマホではボタンを横幅いっぱいに広げる */
+                padding: 0.8rem;
+            }
         }
     </style>
 </head>
@@ -81,19 +117,19 @@
     <header>
         <div class="logo">Sotsuron Swap</div>
         <div class="status-bar">
-            現在のランク: <span class="point-box" id="pointDisplay">0 ポイント</span>
-            </div>
+            現在のランク <span class="point-box" id="pointDisplay">0 pt</span>
+        </div>
     </header>
 
     <div class="container">
         <div class="my-post-area">
-            <h2>あなたのアンケートを掲載する</h2>
-            <p>あと <span id="pointsNeeded" style="font-weight:bold; color:red;">3</span> つ回答すると、自分のアンケートを掲載できます。</p>
-            <button id="postBtn" disabled>掲載する（ポイント不足）</button>
+            <h2>あなたのアンケートを掲載</h2>
+            <p>あと <span id="pointsNeeded" style="font-weight:bold; color:red; font-size:1.2rem;">3</span> つ回答すると<br>自分のアンケートを掲載できます</p>
+            <button id="postBtn" disabled>条件未達成</button>
         </div>
 
         <div class="hero">
-            <h3>みんなのアンケートに回答してポイントを貯めよう</h3>
+            <h3>みんなのアンケートに回答して<br>ポイントを貯めよう</h3>
         </div>
 
         <div class="survey-list">
@@ -122,39 +158,31 @@
     </div>
 
     <script>
-        // ここは「動き」を決めるJavaScriptという言語です
         let points = 0;
         const requiredPoints = 3;
 
         function answerSurvey(btnElement) {
-            // 本当はここで別タブを開いてGoogleフォームへ飛ばす
-            // 今回はデモなので、回答したフリをする
-            alert("（デモ）外部のアンケートサイトへ飛びました。\n回答が完了したとみなします！");
+            alert("（デモ）回答ありがとうございます！\nポイントが加算されました。");
             
-            // ボタンを押せなくする
             btnElement.innerText = "回答済み";
             btnElement.disabled = true;
-            btnElement.style.backgroundColor = "#10b981"; // 緑色にする
+            btnElement.style.backgroundColor = "#10b981"; 
 
-            // ポイントを増やす
             points++;
             updateDisplay();
         }
 
         function updateDisplay() {
-            document.getElementById('pointDisplay').innerText = points + " ポイント";
+            document.getElementById('pointDisplay').innerText = points + " pt";
             
             let remaining = requiredPoints - points;
             if (remaining <= 0) {
-                // 目標達成時の処理
-                document.getElementById('pointsNeeded').parentElement.innerHTML = "<b>おめでとうございます！条件を達成しました。</b>";
+                document.getElementById('pointsNeeded').parentElement.innerHTML = "<b>条件達成！掲載可能です</b>";
                 const postBtn = document.getElementById('postBtn');
                 postBtn.disabled = false;
-                postBtn.innerText = "アンケートを登録する！";
-                postBtn.onclick = function() { 
-    // post.html というページへ移動する命令
-    window.location.href = "post.html"; 
-};
+                postBtn.innerText = "アンケートを登録する";
+                postBtn.onclick = function() { window.location.href = "post.html"; };
+                postBtn.style.backgroundColor = "#ef4444"; // ボタンを目立つ赤色に
             } else {
                 document.getElementById('pointsNeeded').innerText = remaining;
             }
