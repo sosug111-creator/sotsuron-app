@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アンケート投稿 - Sotsuron Swap</title>
+    <style>
+        /* index.htmlと同じデザイン設定 */
+        :root { --primary: #4f46e5; --bg: #f3f4f6; --text: #1f2937; }
+        body { font-family: "Helvetica Neue", Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        
+        .container { max-width: 600px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h1 { text-align: center; color: var(--primary); }
+        
+        /* 入力フォームのデザイン */
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        input, textarea, select {
+            width: 100%; padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box;
+        }
+        .note { font-size: 0.8rem; color: #6b7280; margin-top: 0.2rem; }
+        
+        .btn-area { text-align: center; margin-top: 2rem; }
+        button {
+            background-color: var(--primary); color: white; border: none; padding: 1rem 3rem;
+            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.1rem;
+        }
+        button:hover { opacity: 0.9; }
+        
+        .back-link { display: block; text-align: center; margin-top: 1rem; color: #6b7280; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>アンケート登録</h1>
+        <p style="text-align:center;">3回回答達成おめでとうございます！<br>あなたのアンケートを登録してください。</p>
+        
+        <form onsubmit="submitForm(event)">
+            <div class="form-group">
+                <label>アンケートのタイトル</label>
+                <input type="text" placeholder="例：大学生の睡眠時間に関する調査" required>
+            </div>
+
+            <div class="form-group">
+                <label>アンケートのURL（Googleフォームなど）</label>
+                <input type="url" placeholder="https://forms.gle/..." required>
+                <div class="note">回答者がアクセスするURLを入力してください</div>
+            </div>
+
+            <div class="form-group">
+                <label>対象学部・ジャンル</label>
+                <select>
+                    <option>全学部</option>
+                    <option>社会学系</option>
+                    <option>心理学系</option>
+                    <option>経済学系</option>
+                    <option>その他</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>所要時間の目安</label>
+                <select>
+                    <option>1分以内</option>
+                    <option>3分程度</option>
+                    <option>5分以上</option>
+                </select>
+            </div>
+
+            <div class="btn-area">
+                <button type="submit">登録する</button>
+            </div>
+        </form>
+
+        <a href="index.html" class="back-link">トップページに戻る</a>
+    </div>
+
+    <script>
+        function submitForm(event) {
+            event.preventDefault(); // 本当の送信を止める（デモなので）
+            
+            // ここで本当はデータベースに保存する
+            alert("登録が完了しました！\nトップページにあなたのアンケートが表示されます（デモ）");
+            
+            // トップページに戻る
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

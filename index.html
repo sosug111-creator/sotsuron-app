@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sotsuron Swap - 卒論アンケート交換プラットフォーム</title>
+    <style>
+        /* ここは「見た目」を決めるCSSという言語です */
+        :root {
+            --primary: #4f46e5;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+        }
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        header {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+        }
+        .logo { font-weight: bold; font-size: 1.5rem; color: var(--primary); }
+        .status-bar { font-size: 0.9rem; font-weight: bold; }
+        .point-box { background: var(--primary); color: white; padding: 5px 10px; border-radius: 20px; }
+        
+        .container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+        .hero { text-align: center; margin-bottom: 3rem; }
+        .hero h1 { margin-bottom: 0.5rem; }
+        .hero p { color: #6b7280; }
+        
+        .survey-list { display: grid; gap: 1rem; }
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card:hover { transform: translateY(-3px); }
+        .card-info h3 { margin: 0 0 0.5rem 0; font-size: 1.1rem; }
+        .tags { font-size: 0.8rem; color: #6b7280; }
+        .tag { background: #e5e7eb; padding: 2px 8px; border-radius: 4px; margin-right: 5px; }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { opacity: 0.9; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        .my-post-area {
+            background: #e0e7ff;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Sotsuron Swap</div>
+        <div class="status-bar">
+            現在のランク: <span class="point-box" id="pointDisplay">0 ポイント</span>
+            </div>
+    </header>
+
+    <div class="container">
+        <div class="my-post-area">
+            <h2>あなたのアンケートを掲載する</h2>
+            <p>あと <span id="pointsNeeded" style="font-weight:bold; color:red;">3</span> つ回答すると、自分のアンケートを掲載できます。</p>
+            <button id="postBtn" disabled>掲載する（ポイント不足）</button>
+        </div>
+
+        <div class="hero">
+            <h3>みんなのアンケートに回答してポイントを貯めよう</h3>
+        </div>
+
+        <div class="survey-list">
+            <div class="card">
+                <div class="card-info">
+                    <h3>大学生のSNS利用に関する意識調査</h3>
+                    <div class="tags"><span class="tag">社会学</span> <span class="tag">3分</span></div>
+                </div>
+                <button onclick="answerSurvey(this)">回答する</button>
+            </div>
+            <div class="card">
+                <div class="card-info">
+                    <h3>睡眠時間と学業成績の相関について</h3>
+                    <div class="tags"><span class="tag">心理学</span> <span class="tag">5分</span></div>
+                </div>
+                <button onclick="answerSurvey(this)">回答する</button>
+            </div>
+            <div class="card">
+                <div class="card-info">
+                    <h3>アルバイトの経験が就活に与える影響</h3>
+                    <div class="tags"><span class="tag">教育学</span> <span class="tag">2分</span></div>
+                </div>
+                <button onclick="answerSurvey(this)">回答する</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ここは「動き」を決めるJavaScriptという言語です
+        let points = 0;
+        const requiredPoints = 3;
+
+        function answerSurvey(btnElement) {
+            // 本当はここで別タブを開いてGoogleフォームへ飛ばす
+            // 今回はデモなので、回答したフリをする
+            alert("（デモ）外部のアンケートサイトへ飛びました。\n回答が完了したとみなします！");
+            
+            // ボタンを押せなくする
+            btnElement.innerText = "回答済み";
+            btnElement.disabled = true;
+            btnElement.style.backgroundColor = "#10b981"; // 緑色にする
+
+            // ポイントを増やす
+            points++;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            document.getElementById('pointDisplay').innerText = points + " ポイント";
+            
+            let remaining = requiredPoints - points;
+            if (remaining <= 0) {
+                // 目標達成時の処理
+                document.getElementById('pointsNeeded').parentElement.innerHTML = "<b>おめでとうございます！条件を達成しました。</b>";
+                const postBtn = document.getElementById('postBtn');
+                postBtn.disabled = false;
+                postBtn.innerText = "アンケートを登録する！";
+                postBtn.onclick = function() { 
+    // post.html というページへ移動する命令
+    window.location.href = "post.html"; 
+};
+            } else {
+                document.getElementById('pointsNeeded').innerText = remaining;
+            }
+        }
+    </script>
+</body>
+</html>
