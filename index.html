@@ -157,18 +157,37 @@
         </div>
     </div>
 
-    <script>
-        let points = 0;
+  <script>
+        // 1. アプリを開いた瞬間、保存されたポイントがないか確認する
+        let savedPoints = localStorage.getItem('sotsuron_points');
+        
+        // もし保存されたデータがあれば、それを使い、なければ0からスタート
+        let points = savedPoints ? parseInt(savedPoints) : 0;
+        
         const requiredPoints = 3;
 
+        // 画面が開いたときに、まずは現在のポイントを表示する
+        updateDisplay();
+
         function answerSurvey(btnElement) {
-            alert("（デモ）回答ありがとうございます！\nポイントが加算されました。");
-            
+            // 確認ダイアログ（OKを押すと進む）
+            if(!confirm("外部のアンケートサイトへ移動しますか？\n（デモ：OKを押すと回答完了とみなします）")) {
+                return;
+            }
+
+            // 本来はここで window.open('アンケートのURL', '_blank'); などで飛ばす
+
+            // ボタンを押せなくする
             btnElement.innerText = "回答済み";
             btnElement.disabled = true;
             btnElement.style.backgroundColor = "#10b981"; 
 
+            // ポイントを増やす
             points++;
+            
+            // 【重要】ここでスマホの中にポイント数を保存する！
+            localStorage.setItem('sotsuron_points', points);
+            
             updateDisplay();
         }
 
@@ -176,13 +195,14 @@
             document.getElementById('pointDisplay').innerText = points + " pt";
             
             let remaining = requiredPoints - points;
+            
             if (remaining <= 0) {
                 document.getElementById('pointsNeeded').parentElement.innerHTML = "<b>条件達成！掲載可能です</b>";
                 const postBtn = document.getElementById('postBtn');
                 postBtn.disabled = false;
                 postBtn.innerText = "アンケートを登録する";
                 postBtn.onclick = function() { window.location.href = "post.html"; };
-                postBtn.style.backgroundColor = "#ef4444"; // ボタンを目立つ赤色に
+                postBtn.style.backgroundColor = "#ef4444"; 
             } else {
                 document.getElementById('pointsNeeded').innerText = remaining;
             }
