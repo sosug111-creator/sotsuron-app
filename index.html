@@ -148,28 +148,6 @@
         // 画面が開いたときに、まずは現在のポイントを表示する
         updateDisplay();
 
-        function answerSurvey(btnElement) {
-            // 確認ダイアログ（OKを押すと進む）
-            if(!confirm("外部のアンケートサイトへ移動しますか？\n（デモ：OKを押すと回答完了とみなします）")) {
-                return;
-            }
-
-            // 本来はここで window.open('アンケートのURL', '_blank'); などで飛ばす
-
-            // ボタンを押せなくする
-            btnElement.innerText = "回答済み";
-            btnElement.disabled = true;
-            btnElement.style.backgroundColor = "#10b981"; 
-
-            // ポイントを増やす
-            points++;
-            
-            // 【重要】ここでスマホの中にポイント数を保存する！
-            localStorage.setItem('sotsuron_points', points);
-            
-            updateDisplay();
-        }
-
         function updateDisplay() {
             document.getElementById('pointDisplay').innerText = points + " pt";
             
@@ -186,16 +164,15 @@
                 document.getElementById('pointsNeeded').innerText = remaining;
             }
         }
-    
-        /* --- ここから追加するコード --- */
 
-        // さっきコピーしたスプレッドシートのURL（CSV形式）をここに貼る！
+        /* --- スプレッドシート読み込み部分 --- */
+
+        // あなたのCSV URL
         const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ4Qjh20XKMyAtIWUQpOlaqKfEa0mGuzdMC7q1rihKbRuDMczRJTL6wR0oY3ouipDK8uFhuVhzYwMh9/pub?output=csv";
 
         // ページが開かれたら、自動でシートを読みに行く
         window.onload = function() {
-            // ポイント表示の更新（既存機能）
-            let savedPoints = localStorage.getItem('sotsuron_points');
+            // ポイント表示の更新
             if(savedPoints) points = parseInt(savedPoints);
             updateDisplay();
 
@@ -203,14 +180,9 @@
             fetch(sheetUrl)
                 .then(response => response.text())
                 .then(text => {
-                    const rows = parseCSV(text);
-                    // スプレッドシートのデータを取得
-            fetch(sheetUrl)
-                .then(response => response.text())
-                .then(text => {
-                    let rows = parseCSV(text); // const を let に変えてください！
+                    let rows = parseCSV(text); // letを使用（書き換えOK）
 
-                    // ▼▼▼ 追加するのはこの3行だけ！ ▼▼▼
+                    // ▼▼▼ ランダム表示処理 ▼▼▼
                     // 1行目（見出し）を別にしておく
                     const header = rows[0];
                     const dataRows = rows.slice(1);
@@ -220,13 +192,8 @@
 
                     // 見出しと、シャッフルした中身を合体させて元に戻す
                     rows = [header, ...dataRows];
-                    // ▲▲▲ 追加ここまで ▲▲▲
+                    // ▲▲▲ ここまで ▲▲▲
 
-                    const listElement = document.getElementById('survey-list');
-
-                    // ここから下は今まで通り
-                    for (let i = 1; i < rows.length; i++) {
-                        // ...（省略）
                     const listElement = document.getElementById('survey-list');
 
                     // 1行目（見出し）は飛ばして、2行目から順にカードを作る
@@ -300,6 +267,6 @@
             if (currentCell || row.length > 0) { row.push(currentCell); rows.push(row); }
             return rows;
         }
-    </script>
+  </script>
 </body>
 </html>
