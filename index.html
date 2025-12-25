@@ -204,6 +204,29 @@
                 .then(response => response.text())
                 .then(text => {
                     const rows = parseCSV(text);
+                    // スプレッドシートのデータを取得
+            fetch(sheetUrl)
+                .then(response => response.text())
+                .then(text => {
+                    let rows = parseCSV(text); // const を let に変えてください！
+
+                    // ▼▼▼ 追加するのはこの3行だけ！ ▼▼▼
+                    // 1行目（見出し）を別にしておく
+                    const header = rows[0];
+                    const dataRows = rows.slice(1);
+
+                    // データ行（中身）だけをシャッフル（ランダム並べ替え）する
+                    dataRows.sort(() => Math.random() - 0.5);
+
+                    // 見出しと、シャッフルした中身を合体させて元に戻す
+                    rows = [header, ...dataRows];
+                    // ▲▲▲ 追加ここまで ▲▲▲
+
+                    const listElement = document.getElementById('survey-list');
+
+                    // ここから下は今まで通り
+                    for (let i = 1; i < rows.length; i++) {
+                        // ...（省略）
                     const listElement = document.getElementById('survey-list');
 
                     // 1行目（見出し）は飛ばして、2行目から順にカードを作る
