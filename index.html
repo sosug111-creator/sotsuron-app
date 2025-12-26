@@ -114,9 +114,10 @@
 </head>
 <body>
 
-    <header>
+   <header>
         <div class="logo">Anke Share</div>
         <div class="status-bar">
+            アンケート掲載数 <span class="point-box" id="surveyCountDisplay" style="background-color: #10b981; margin-right: 15px;">0件</span>
             現在のランク <span class="point-box" id="pointDisplay">0 pt</span>
         </div>
     </header>
@@ -180,34 +181,62 @@
             fetch(sheetUrl)
                 .then(response => response.text())
                 .then(text => {
-                    let rows = parseCSV(text); // letを使用（書き換えOK）
+                    let rows = parseCSV(text);
 
-                    // ▼▼▼ ランダム表示処理 ▼▼▼
                     // 1行目（見出し）を別にしておく
                     const header = rows[0];
-                    const dataRows = rows.slice(1);
+                    
+                    // 今日の日付を取得（時間は00:00:00にする）
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
 
-                    // データ行（中身）だけをシャッフル（ランダム並べ替え）する
+                    // ★★★ ここで掲載期間を決めます（現在は14日間） ★★★
+                    const validPeriodDays = 14; 
+
+                    // ▼▼▼ フィルタリング処理 ▼▼▼
+                    const dataRows = rows.slice(1).filter(row => {
+                        // 1. データが足りない行は除外
+                        if (row.length < 5) return false; 
+
+                        // 2. 期限切れチェック（自動計算）
+                        const registeredDateStr = row[4]; // E列（登録日）を取得
+                        const registeredDate = new Date(registeredDateStr);
+
+                        // 日付として正しくない場合は除外
+                        if (isNaN(registeredDate.getTime())) return false;
+
+                        // 「期限日」を計算する（登録日 + 14日）
+                        const deadline = new Date(registeredDate);
+                        deadline.setDate(deadline.getDate() + validPeriodDays);
+
+                        // もし今日が、期限日を過ぎていたら除外
+                        if (today > deadline) {
+                            return false; // 表示しない
+                        }
+                        return true; // 表示する
+                    });
+                    // ▲▲▲ ここまで ▲▲▲
+
+                    // 掲載数を表示（有効なアンケートの数だけカウント）
+                    document.getElementById('surveyCountDisplay').innerText = dataRows.length + " 件";
+
+                    // ランダムに並び替え
                     dataRows.sort(() => Math.random() - 0.5);
 
-                    // 見出しと、シャッフルした中身を合体させて元に戻す
+                    // 合体
                     rows = [header, ...dataRows];
-                    // ▲▲▲ ここまで ▲▲▲
 
                     const listElement = document.getElementById('survey-list');
 
-                    // 1行目（見出し）は飛ばして、2行目から順にカードを作る
+                    // カード作成ループ
                     for (let i = 1; i < rows.length; i++) {
                         const row = rows[i];
-                        // データが足りない行は無視
-                        if (row.length < 4) continue;
+                        const title = row[0];
+                        const tag = row[1];
+                        const time = row[2];
+                        const url = row[3];
+                        // E列(date)は計算に使ったので表示しなくてOK
 
-                        const title = row[0]; // A列
-                        const tag = row[1];   // B列
-                        const time = row[2];  // C列
-                        const url = row[3];   // D列
-
-                        // カードのHTMLを作る
                         const cardHTML = `
                             <div class="card">
                                 <div class="card-info">
@@ -220,11 +249,9 @@
                                 <button onclick="clickSurvey('${url}', this)">回答する</button>
                             </div>
                         `;
-                        // 画面に追加する
                         listElement.insertAdjacentHTML('beforeend', cardHTML);
                     }
                 });
-        };
 
         // 回答ボタンを押した時の処理（ポイント加算 ＋ ページ移動）
         function clickSurvey(url, btnElement) {
