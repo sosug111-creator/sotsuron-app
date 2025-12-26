@@ -235,6 +235,12 @@
     </div>
 
   <script>
+        // ▼▼▼ 設定エリア ▼▼▼
+        const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ4Qjh20XKMyAtIWUQpOlaqKfEa0mGuzdMC7q1rihKbRuDMczRJTL6wR0oY3ouipDK8uFhuVhzYwMh9/pub?output=csv";
+        const validPeriodDays = 14;
+        const postFormUrl = "post.html"; // さっき作った post.html に飛ばす
+        // ▲▲▲ 設定ここまで ▲▲▲
+
         // 1. ポイント機能の初期化
         let savedPoints = localStorage.getItem('sotsuron_points');
         let points = savedPoints ? parseInt(savedPoints) : 0;
@@ -242,66 +248,55 @@
 
         updateDisplay();
 
-        function updateDisplay() {
-            document.getElementById('pointDisplay').innerText = points + " pt";
-            let remaining = requiredPoints - points;
-            
-            if (remaining <= 0) {
-                document.getElementById('pointsNeeded').parentElement.innerHTML = "<b>条件達成！掲載可能です</b>";
-                const postBtn = document.getElementById('postBtn');
-                postBtn.disabled = false;
-                postBtn.innerText = "アンケートを登録する";
-                postBtn.onclick = function() { window.location.href = "post.html"; };
-                postBtn.style.backgroundColor = "#ef4444"; 
-            } else {
-                document.getElementById('pointsNeeded').innerText = remaining;
-            }
-        }
-
-        /* --- スプレッドシート読み込み部分 --- */
-        const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ4Qjh20XKMyAtIWUQpOlaqKfEa0mGuzdMC7q1rihKbRuDMczRJTL6wR0oY3ouipDK8uFhuVhzYwMh9/pub?output=csv";
-
+        // ページ読み込み完了時の処理
         window.onload = function() {
             if(savedPoints) points = parseInt(savedPoints);
             updateDisplay();
+
+            const listElement = document.getElementById('survey-list');
+            
+            // ★読み込み中メッセージ
+            listElement.innerHTML = '<p style="text-align:center; padding:2rem; color:#666;">データを読み込んでいます...</p>';
 
             fetch(sheetUrl)
                 .then(response => response.text())
                 .then(text => {
                     let rows = parseCSV(text);
                     const header = rows[0];
-                    
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
-                    const validPeriodDays = 14; // 掲載期間（14日間）
 
-                    // ▼▼▼ フィルタリング ▼▼▼
+                    // フィルタリング（期限切れチェック）
                     const dataRows = rows.slice(1).filter(row => {
-                        // データが5列未満（E列がない）なら除外
                         if (row.length < 5) return false; 
-
-                        // 日付チェック
                         const registeredDateStr = row[4];
                         const registeredDate = new Date(registeredDateStr);
                         if (isNaN(registeredDate.getTime())) return false;
-
-                        // 期限チェック
                         const deadline = new Date(registeredDate);
                         deadline.setDate(deadline.getDate() + validPeriodDays);
-
-                        if (today > deadline) return false; // 期限切れ
+                        if (today > deadline) return false; 
                         return true;
                     });
                     
-                    // 件数表示
                     document.getElementById('surveyCountDisplay').innerText = dataRows.length + " 件";
+                    listElement.innerHTML = ""; // メッセージクリア
 
-                    // ランダム表示
+                    // データが0件の場合
+                    if (dataRows.length === 0) {
+                        listElement.innerHTML = `
+                            <div style="text-align:center; padding:3rem; color:#666;">
+                                <p>現在募集中アンケートはありません</p>
+                                <p style="font-size:0.8rem;">最初の投稿者になってみませんか？</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // ランダム並び替え
                     dataRows.sort(() => Math.random() - 0.5);
                     rows = [header, ...dataRows];
 
-                    const listElement = document.getElementById('survey-list');
-
+                    // カード作成ループ
                     for (let i = 1; i < rows.length; i++) {
                         const row = rows[i];
                         const title = row[0];
@@ -309,7 +304,8 @@
                         const time = row[2];
                         const url = row[3];
 
-                        // カードのHTMLを作る
+                        const reportLink = `mailto:sosug1411@gmail.com?subject=【報告】リンク切れ等の報告&body=以下のアンケートに問題があります：%0D%0Aタイトル：${title}%0D%0AURL：${url}`;
+
                         const cardHTML = `
                             <div class="card">
                                 <div class="card-info">
@@ -319,16 +315,41 @@
                                         <span class="tag">${time}</span>
                                     </div>
                                     <div style="margin-top: 0.5rem;">
-                                        <a href="mailto:sosug1411@gmail.com?subject=【報告】リンク切れ等の報告&body=以下のアンケートに問題があります：%0D%0Aタイトル：${title}%0D%0AURL：${url}" style="font-size:0.8rem; color:#999; text-decoration:underline;">⚠️ リンク切れ・違反を報告</a>
+                                        <a href="${reportLink}" style="font-size:0.8rem; color:#999; text-decoration:underline;">⚠️ リンク切れ・違反を報告</a>
                                     </div>
-                                    </div>
+                                </div>
                                 <button onclick="clickSurvey('${url}', this)">回答する</button>
                             </div>
                         `;
+                        
+                        // ★★★ ここが抜けていました！これがないと表示されません ★★★
+                        listElement.insertAdjacentHTML('beforeend', cardHTML);
                     }
+                })
+                .catch(err => {
+                    console.error(err);
+                    listElement.innerHTML = '<p style="text-align:center; color:red;">読み込みに失敗しました。</p>';
                 });
         };
 
+        // ポイント表示更新
+        function updateDisplay() {
+            document.getElementById('pointDisplay').innerText = points + " pt";
+            let remaining = requiredPoints - points;
+            
+            if (remaining <= 0) {
+                document.getElementById('pointsNeeded').parentElement.innerHTML = "<b>条件達成！掲載可能です</b>";
+                const postBtn = document.getElementById('postBtn');
+                postBtn.disabled = false;
+                postBtn.innerText = "アンケートを登録する";
+                postBtn.onclick = function() { window.open(postFormUrl, '_blank'); };
+                postBtn.style.backgroundColor = "#ef4444"; 
+            } else {
+                document.getElementById('pointsNeeded').innerText = remaining;
+            }
+        }
+
+        // 回答ボタン
         function clickSurvey(url, btnElement) {
             if(!confirm("アンケートページへ移動しますか？")) return;
             points++;
@@ -337,6 +358,7 @@
             window.open(url, '_blank');
         }
 
+        // CSVパース
         function parseCSV(text) {
             const rows = [];
             let row = [];
@@ -360,39 +382,33 @@
             if (currentCell || row.length > 0) { row.push(currentCell); rows.push(row); }
             return rows;
         }
-  /* ▼▼▼ ポップアップ制御のプログラム ▼▼▼ */
-        
-        // 1. 要素を取得
+
+        // ポップアップ制御
         const modal = document.getElementById('welcomeModal');
         const checkbox = document.getElementById('agreeCheck');
         const closeBtn = document.getElementById('closeModalBtn');
 
-        // 2. 過去に同意済みかチェック（localStorageを使う）
-        // ※毎回表示させたい場合は、下の「if(...) return;」の行を削除してください
         if (localStorage.getItem('anke_share_agreed') === 'true') {
-            modal.style.display = 'none'; // 同意済みなら消す
+            if(modal) modal.style.display = 'none';
         }
 
-        // 3. チェックボックスが押されたらボタンを有効化する
-        checkbox.addEventListener('change', function() {
-            if (this.checked) {
-                closeBtn.disabled = false;
-                closeBtn.classList.add('active');
-                closeBtn.innerText = "同意して利用を開始";
-            } else {
-                closeBtn.disabled = true;
-                closeBtn.classList.remove('active');
-                closeBtn.innerText = "同意が必要です";
-            }
-        });
-
-        // 4. ボタンが押されたら閉じる
-        closeBtn.addEventListener('click', function() {
-            modal.style.display = 'none';
-            // 「同意した」という事実をブラウザに保存する
-            localStorage.setItem('anke_share_agreed', 'true');
-        });
-        /* ▲▲▲ ここまで ▲▲▲ */
+        if(checkbox && closeBtn) {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    closeBtn.disabled = false;
+                    closeBtn.classList.add('active');
+                    closeBtn.innerText = "同意して利用を開始";
+                } else {
+                    closeBtn.disabled = true;
+                    closeBtn.classList.remove('active');
+                    closeBtn.innerText = "同意が必要です";
+                }
+            });
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+                localStorage.setItem('anke_share_agreed', 'true');
+            });
+        }
   </script>
     
     <footer style="text-align:center; padding:2rem; margin-top:2rem; font-size:0.8rem; color:#666; border-top:1px solid #ddd;">

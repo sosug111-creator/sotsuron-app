@@ -3,39 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>アンケート投稿 - Sotsuron Swap</title>
+    <title>アンケート投稿 - Anke Share</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
     <style>
-        /* デザイン設定 */
+        /* デザイン設定（Anke Share共通） */
         :root { --primary: #4f46e5; --bg: #f3f4f6; --text: #1f2937; }
         body { font-family: "Helvetica Neue", Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
         
-        .container { max-width: 600px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h1 { text-align: center; color: var(--primary); }
+        .container { max-width: 600px; margin: 4rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h1 { text-align: center; color: var(--primary); margin-bottom: 1rem; }
         
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
         input, textarea, select {
             width: 100%; padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box;
         }
-        .note { font-size: 0.8rem; color: #6b7280; margin-top: 0.2rem; }
         
         .btn-area { text-align: center; margin-top: 2rem; }
         button {
             background-color: var(--primary); color: white; border: none; padding: 1rem 3rem;
             border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.1rem;
+            transition: 0.3s;
         }
-        button:hover { opacity: 0.9; }
-        .back-link { display: block; text-align: center; margin-top: 1rem; color: #6b7280; text-decoration: none; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+        .back-link { display: block; text-align: center; margin-top: 1.5rem; color: #6b7280; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>アンケート登録</h1>
-        <p style="text-align:center;">3回回答達成おめでとうございます！<br>あなたのアンケート情報を送信してください。<br>管理人が確認後、サイトに掲載します。</p>
+        <p style="text-align:center; color:#666; margin-bottom:2rem;">
+            条件達成おめでとうございます！🎉<br>
+            あなたのアンケート情報を送信してください。<br>
+            <span style="font-size:0.9rem; color:#ef4444;">※送信内容は管理人にメールで届き、確認後に掲載されます。</span>
+        </p>
         
         <form action="https://formspree.io/f/xykgbqjj" method="POST">
-            
             
             <div class="form-group">
                 <label>メールアドレス（連絡用）</label>
