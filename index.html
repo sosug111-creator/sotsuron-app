@@ -116,6 +116,31 @@
             .modal-content h2 { font-size: 1.3rem; }
             .modal-content ul { padding-left: 1rem; }
         }
+    
+    /* ▼▼▼ 追加：シェアボタンの見た目 ▼▼▼ */
+        .share-area {
+            text-align: center;
+            margin: 1rem 0 2rem 0;
+        }
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s;
+        }
+        .share-btn:hover { opacity: 0.8; }
+        .btn-x { background-color: #000; } /* Xは黒 */
+        .btn-line { background-color: #06c755; } /* LINEは緑 */    
+    
     </style>
 </head>
 <body>
@@ -169,6 +194,18 @@
         <div class="hero">
             <h3>みんなのアンケートに回答して<br>ポイントを貯めよう</h3>
         </div>
+        <div class="share-area">
+            <p style="font-size:0.8rem; color:#666; margin-bottom:0.5rem;">友達にシェアしてアンケートを集めよう！</p>
+            
+            <button class="share-btn btn-x" onclick="window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent('大学生のためのアンケート回答プラットフォーム「Anke Share」\nポイントを貯めて自分のアンケートを掲載しよう！')+'&url='+encodeURIComponent(location.href), '_blank')">
+                X でシェア
+            </button>
+
+            <button class="share-btn btn-line" onclick="window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(location.href), '_blank')">
+                LINE で送る
+            </button>
+        </div>
+        ```
 
         <div class="survey-list" id="survey-list">
             </div>
@@ -181,8 +218,7 @@
         const postFormUrl = "post.html";
         const requiredPoints = 3;
         
-        // ★ここに「報告用Googleフォーム」のURLを入れてください
-        // （今はGoogleのトップページになっています）
+        // 報告用フォームのURL（ご自身で作成したURLが入っていますか確認してください）
         const reportFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdSezMq8XimmjdBuHSrCDuJin-U_KSeIEpBM0jjWEU51X2FUg/viewform?usp=dialog"; 
         // ▲▲▲ 設定ここまで ▲▲▲
 
@@ -228,7 +264,7 @@
                     if (dataRows.length === 0) {
                         listElement.innerHTML = `
                             <div style="text-align:center; padding:3rem; color:#666;">
-                                <p>現在募集中アンケートはありません</p>
+                                <p>現在募集中のアンケートはありません</p>
                                 <p style="font-size:0.8rem;">最初の投稿者になってみませんか？</p>
                             </div>
                         `;
@@ -243,8 +279,25 @@
                         const title = row[0];
                         const tag = row[1];
                         const time = row[2];
-                        // エラー防止：データがない場合は空文字にする
-                        const url = (row[3] || "").trim(); 
+                        const url = (row[3] || "").trim();
+                        const registeredDateStr = row[4]; // 登録日を取得
+
+                        // ★★★ 残り日数の計算 ★★★
+                        const registeredDate = new Date(registeredDateStr);
+                        const deadline = new Date(registeredDate);
+                        deadline.setDate(deadline.getDate() + validPeriodDays);
+                        
+                        // 残り時間の計算（ミリ秒 → 日数）
+                        const diffTime = deadline - today;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                        // 表示用HTMLの作成（3日以内なら赤くする）
+                        let deadlineHTML = "";
+                        if (diffDays <= 3) {
+                            deadlineHTML = `<span style="color:#ef4444; font-weight:bold; font-size:0.85rem; margin-left:8px;">🔥あと${diffDays}日</span>`;
+                        } else {
+                            deadlineHTML = `<span style="color:#6b7280; font-size:0.85rem; margin-left:8px;">あと${diffDays}日</span>`;
+                        }
 
                         const isAnswered = answeredSurveys.includes(url);
                         
@@ -255,8 +308,6 @@
                             buttonHTML = `<button onclick="clickSurvey('${url}', this)">回答する</button>`;
                         }
 
-                        // ★★★ 修正箇所：報告ボタンを「普通のリンク」に変更 ★★★
-                        // Googleフォームを新しいタブで開くようにしました
                         const reportLinkHTML = `
                             <a href="${reportFormUrl}" target="_blank" rel="noopener noreferrer" 
                                style="font-size:0.8rem; color:#999; text-decoration:underline; display:inline-block; padding:5px 0;">
@@ -264,11 +315,15 @@
                             </a>
                         `;
 
+                        // カードHTMLに deadlineHTML を追加しました
                         const cardHTML = `
                             <div class="card">
                                 <div class="card-info">
                                     <h3>${title}</h3>
-                                    <div class="tags"><span class="tag">${tag}</span><span class="tag">${time}</span></div>
+                                    <div class="tags">
+                                        <span class="tag">${tag}</span>
+                                        <span class="tag">${time}</span>
+                                        ${deadlineHTML} </div>
                                     <div style="margin-top: 0.5rem;">
                                         ${reportLinkHTML}
                                     </div>
