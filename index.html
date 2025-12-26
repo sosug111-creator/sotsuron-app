@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9RG9T3E5N9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-9RG9T3E5N9');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anke Share - 卒論アンケート相互回答プラットフォーム</title>
@@ -270,6 +279,7 @@
                         const time = row[2];
                         const url = row[3];
 
+                        // カードのHTMLを作る
                         const cardHTML = `
                             <div class="card">
                                 <div class="card-info">
@@ -278,11 +288,13 @@
                                         <span class="tag">${tag}</span>
                                         <span class="tag">${time}</span>
                                     </div>
-                                </div>
+                                    <div style="margin-top: 0.5rem;">
+                                        <a href="mailto:sosug1411@gmail.com?subject=【報告】リンク切れ等の報告&body=以下のアンケートに問題があります：%0D%0Aタイトル：${title}%0D%0AURL：${url}" style="font-size:0.8rem; color:#999; text-decoration:underline;">⚠️ リンク切れ・違反を報告</a>
+                                    </div>
+                                    </div>
                                 <button onclick="clickSurvey('${url}', this)">回答する</button>
                             </div>
                         `;
-                        listElement.insertAdjacentHTML('beforeend', cardHTML);
                     }
                 });
         };
@@ -352,5 +364,17 @@
         });
         /* ▲▲▲ ここまで ▲▲▲ */
   </script>
+    
+    <footer style="text-align:center; padding:2rem; margin-top:2rem; font-size:0.8rem; color:#666; border-top:1px solid #ddd;">
+        <p>Anke Share（アンケシェア）</p>
+        <p>
+            当サイトで取得したメールアドレス等の個人情報は、<br>
+            本サービスの運営・連絡以外の目的には使用しません。<br>
+            また、アクセス解析のためにGoogle Analyticsを使用しています。
+        </p>
+        <p>お問い合わせ: <a href="mailto:sosug1411@gmail.com">sosug1411@gmail.com</a></p>
+        <p>&copy; 2025 Anke Share</p>
+    </footer>
+
 </body>
 </html>
