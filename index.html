@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anke Share - アンケート相互回答プラットフォーム</title>
+    <title>Anke Share - 卒論アンケート相互回答プラットフォーム</title>
     <style>
-        /* 基本設定（PC・スマホ共通） */
+        /* 基本設定 */
         :root {
             --primary: #4f46e5;
             --bg: #f3f4f6;
@@ -19,7 +19,7 @@
             margin: 0;
             padding: 0;
             line-height: 1.6;
-            padding-top: 80px; /* ヘッダーの高さ分だけ中身を下げる */
+            padding-top: 80px; 
         }
         header {
             background-color: white;
@@ -28,12 +28,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: fixed; /* 常に上に固定 */
+            position: fixed; 
             top: 0;
             left: 0;
             width: 100%;
-            box-sizing: border-box; /* パディングを含めた幅にする */
-            z-index: 1000; /* 他の要素より手前に表示 */
+            box-sizing: border-box; 
+            z-index: 1000; 
         }
         .logo { font-weight: bold; font-size: 1.5rem; color: var(--primary); white-space: nowrap; }
         .status-bar { font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; }
@@ -67,8 +67,8 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            white-space: nowrap; /* ボタンの文字を折り返さない */
-            min-width: 100px; /* ボタンの最小幅を確保 */
+            white-space: nowrap; 
+            min-width: 100px; 
         }
         button:hover { opacity: 0.9; }
         button:disabled { background-color: #ccc; cursor: not-allowed; }
@@ -81,32 +81,28 @@
             margin-bottom: 2rem;
         }
 
-        /* --------------------------------------
-           ここが重要！スマホ用のルール（レスポンシブ対応）
-           画面幅が600px以下の時だけ適用されます
-           -------------------------------------- */
+        /* スマホ用設定 */
         @media (max-width: 600px) {
             header {
                 padding: 0.8rem 1rem;
-                flex-direction: column; /* 縦並びにする */
+                flex-direction: column; 
                 gap: 10px;
                 height: auto;
             }
             body {
-                padding-top: 110px; /* ヘッダーが縦に伸びた分、中身をもっと下げる */
+                padding-top: 110px; 
             }
             .logo { font-size: 1.3rem; }
-            
             .card {
-                flex-direction: column; /* カードの中身も縦並びにする */
-                align-items: flex-start; /* 左寄せにする */
+                flex-direction: column; 
+                align-items: flex-start; 
             }
             .card-info {
                 margin-bottom: 1rem;
                 width: 100%;
             }
             .card button {
-                width: 100%; /* スマホではボタンを横幅いっぱいに広げる */
+                width: 100%; 
                 padding: 0.8rem;
             }
         }
@@ -114,7 +110,7 @@
 </head>
 <body>
 
-   <header>
+    <header>
         <div class="logo">Anke Share</div>
         <div class="status-bar">
             アンケート掲載数 <span class="point-box" id="surveyCountDisplay" style="background-color: #10b981; margin-right: 15px;">0件</span>
@@ -138,20 +134,15 @@
     </div>
 
   <script>
-        // 1. アプリを開いた瞬間、保存されたポイントがないか確認する
+        // 1. ポイント機能の初期化
         let savedPoints = localStorage.getItem('sotsuron_points');
-        
-        // もし保存されたデータがあれば、それを使い、なければ0からスタート
         let points = savedPoints ? parseInt(savedPoints) : 0;
-        
         const requiredPoints = 3;
 
-        // 画面が開いたときに、まずは現在のポイントを表示する
         updateDisplay();
 
         function updateDisplay() {
             document.getElementById('pointDisplay').innerText = points + " pt";
-            
             let remaining = requiredPoints - points;
             
             if (remaining <= 0) {
@@ -167,75 +158,55 @@
         }
 
         /* --- スプレッドシート読み込み部分 --- */
-
-        // あなたのCSV URL
         const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ4Qjh20XKMyAtIWUQpOlaqKfEa0mGuzdMC7q1rihKbRuDMczRJTL6wR0oY3ouipDK8uFhuVhzYwMh9/pub?output=csv";
 
-        // ページが開かれたら、自動でシートを読みに行く
         window.onload = function() {
-            // ポイント表示の更新
             if(savedPoints) points = parseInt(savedPoints);
             updateDisplay();
 
-            // スプレッドシートのデータを取得
             fetch(sheetUrl)
                 .then(response => response.text())
                 .then(text => {
                     let rows = parseCSV(text);
-
-                    // 1行目（見出し）を別にしておく
                     const header = rows[0];
                     
-                    // 今日の日付を取得（時間は00:00:00にする）
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
+                    const validPeriodDays = 14; // 掲載期間（14日間）
 
-                    // ★★★ ここで掲載期間を決めます（現在は14日間） ★★★
-                    const validPeriodDays = 14; 
-
-                    // ▼▼▼ フィルタリング処理 ▼▼▼
+                    // ▼▼▼ フィルタリング ▼▼▼
                     const dataRows = rows.slice(1).filter(row => {
-                        // 1. データが足りない行は除外
+                        // データが5列未満（E列がない）なら除外
                         if (row.length < 5) return false; 
 
-                        // 2. 期限切れチェック（自動計算）
-                        const registeredDateStr = row[4]; // E列（登録日）を取得
+                        // 日付チェック
+                        const registeredDateStr = row[4];
                         const registeredDate = new Date(registeredDateStr);
-
-                        // 日付として正しくない場合は除外
                         if (isNaN(registeredDate.getTime())) return false;
 
-                        // 「期限日」を計算する（登録日 + 14日）
+                        // 期限チェック
                         const deadline = new Date(registeredDate);
                         deadline.setDate(deadline.getDate() + validPeriodDays);
 
-                        // もし今日が、期限日を過ぎていたら除外
-                        if (today > deadline) {
-                            return false; // 表示しない
-                        }
-                        return true; // 表示する
+                        if (today > deadline) return false; // 期限切れ
+                        return true;
                     });
-                    // ▲▲▲ ここまで ▲▲▲
-
-                    // 掲載数を表示（有効なアンケートの数だけカウント）
+                    
+                    // 件数表示
                     document.getElementById('surveyCountDisplay').innerText = dataRows.length + " 件";
 
-                    // ランダムに並び替え
+                    // ランダム表示
                     dataRows.sort(() => Math.random() - 0.5);
-
-                    // 合体
                     rows = [header, ...dataRows];
 
                     const listElement = document.getElementById('survey-list');
 
-                    // カード作成ループ
                     for (let i = 1; i < rows.length; i++) {
                         const row = rows[i];
                         const title = row[0];
                         const tag = row[1];
                         const time = row[2];
                         const url = row[3];
-                        // E列(date)は計算に使ったので表示しなくてOK
 
                         const cardHTML = `
                             <div class="card">
@@ -252,31 +223,24 @@
                         listElement.insertAdjacentHTML('beforeend', cardHTML);
                     }
                 });
+        };
 
-        // 回答ボタンを押した時の処理（ポイント加算 ＋ ページ移動）
         function clickSurvey(url, btnElement) {
             if(!confirm("アンケートページへ移動しますか？")) return;
-            
-            // ポイント加算処理
             points++;
             localStorage.setItem('sotsuron_points', points);
             updateDisplay();
-
-            // 別タブでアンケートを開く
             window.open(url, '_blank');
         }
 
-        // CSVを正しく分解する便利機能（カンマ区切り対策）
         function parseCSV(text) {
             const rows = [];
             let row = [];
             let inQuote = false;
             let currentCell = "";
-            
             for (let i = 0; i < text.length; i++) {
                 const char = text[i];
                 const nextChar = text[i+1];
-
                 if (char === '"') {
                     if (inQuote && nextChar === '"') { i++; currentCell += '"'; }
                     else { inQuote = !inQuote; }
@@ -287,9 +251,7 @@
                     if (row.length > 0) rows.push(row);
                     row = []; currentCell = "";
                     if (char === '\r' && nextChar === '\n') i++;
-                } else {
-                    currentCell += char;
-                }
+                } else { currentCell += char; }
             }
             if (currentCell || row.length > 0) { row.push(currentCell); rows.push(row); }
             return rows;
