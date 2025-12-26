@@ -106,10 +106,71 @@
                 padding: 0.8rem;
             }
         }
+    /* ▼▼▼ ポップアップ用のデザイン ▼▼▼ */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* 背景を暗くする */
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999; /* 最前面に表示 */
+        }
+        .modal-content {
+            background: white; padding: 2rem; border-radius: 12px;
+            max-width: 500px; width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .modal-content h2 { margin-top: 0; color: var(--primary); text-align: center; }
+        .modal-content ul { text-align: left; font-size: 0.9rem; padding-left: 1.2rem; color: #4b5563; }
+        .modal-content li { margin-bottom: 0.5rem; }
+        
+        .agree-area {
+            margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #eee;
+            text-align: center;
+        }
+        .agree-label {
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; cursor: pointer; font-weight: bold;
+        }
+        .agree-label input { transform: scale(1.5); cursor: pointer; } /* チェックボックスを大きく */
+        
+        #closeModalBtn {
+            margin-top: 1rem; width: 100%; padding: 1rem; font-size: 1rem;
+            background-color: #ccc; cursor: not-allowed; transition: 0.3s;
+        }
+        /* チェックされた時のボタンの色（有効化） */
+        #closeModalBtn.active {
+            background-color: var(--primary); cursor: pointer;
+        }
+        /* ▲▲▲ ここまで ▲▲▲ */
     </style>
 </head>
 <body>
+<div id="welcomeModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Anke Shareのご利用について</h2>
+            <p style="font-size:0.9rem; color:#666;">
+                本サイトは学生同士の相互扶助プラットフォームです。<br>
+                健全な運営のため、以下の点にご同意ください。
+            </p>
+            <ul>
+                <li><strong>悪用厳禁：</strong>不適切な投稿は即時削除・通報します。</li>
+                <li><strong>自動削除：</strong>掲載は登録日から<strong>2週間</strong>で自動終了します。</li>
+                <li><strong>データ保存：</strong>ポイントはブラウザに保存されます。キャッシュ削除で消える場合があります。</li>
+                <li><strong>免責事項：</strong>アンケート内容やトラブルに関して管理人は責任を負いません。</li>
+            </ul>
+            <p style="font-size:0.85rem; background:#f3f4f6; padding:0.5rem; border-radius:4px; text-align:center;">
+                お問い合わせ・削除依頼：<br>
+                <a href="mailto:sosug1411@gmail.com">sosug1411@gmail.com</a>
+            </p>
 
+            <div class="agree-area">
+                <label class="agree-label">
+                    <input type="checkbox" id="agreeCheck">
+                    上記の内容を理解し、同意します
+                </label>
+                <button id="closeModalBtn" disabled>サイトを利用する</button>
+            </div>
+        </div>
+    </div>
     <header>
         <div class="logo">Anke Share</div>
         <div class="status-bar">
@@ -256,6 +317,39 @@
             if (currentCell || row.length > 0) { row.push(currentCell); rows.push(row); }
             return rows;
         }
+  /* ▼▼▼ ポップアップ制御のプログラム ▼▼▼ */
+        
+        // 1. 要素を取得
+        const modal = document.getElementById('welcomeModal');
+        const checkbox = document.getElementById('agreeCheck');
+        const closeBtn = document.getElementById('closeModalBtn');
+
+        // 2. 過去に同意済みかチェック（localStorageを使う）
+        // ※毎回表示させたい場合は、下の「if(...) return;」の行を削除してください
+        if (localStorage.getItem('anke_share_agreed') === 'true') {
+            modal.style.display = 'none'; // 同意済みなら消す
+        }
+
+        // 3. チェックボックスが押されたらボタンを有効化する
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                closeBtn.disabled = false;
+                closeBtn.classList.add('active');
+                closeBtn.innerText = "同意して利用を開始";
+            } else {
+                closeBtn.disabled = true;
+                closeBtn.classList.remove('active');
+                closeBtn.innerText = "同意が必要です";
+            }
+        });
+
+        // 4. ボタンが押されたら閉じる
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+            // 「同意した」という事実をブラウザに保存する
+            localStorage.setItem('anke_share_agreed', 'true');
+        });
+        /* ▲▲▲ ここまで ▲▲▲ */
   </script>
 </body>
 </html>
