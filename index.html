@@ -241,7 +241,11 @@
                         const time = row[2];
                         const url = row[3].trim(); // 空白除去の安全策
 
-                        const reportLink = `mailto:sosug1411@gmail.com?subject=【報告】&body=タイトル：${title}%0D%0AURL：${url}`;
+                        // ★★★ 修正箇所：文字化け・リンク切れを防ぐ処理 ★★★
+                        const mailSubject = encodeURIComponent("【報告】リンク切れ等の報告");
+                        const mailBody = encodeURIComponent(`以下のアンケートに問題があります：\n\nタイトル：${title}\nURL：${url}`);
+                        const reportLink = `mailto:sosug1411@gmail.com?subject=${mailSubject}&body=${mailBody}`;
+                        // 
                         const isAnswered = answeredSurveys.includes(url);
                         
                         let buttonHTML = '';
