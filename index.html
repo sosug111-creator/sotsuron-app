@@ -180,6 +180,10 @@
         const validPeriodDays = 14;
         const postFormUrl = "post.html";
         const requiredPoints = 3;
+        
+        // ★ここに「報告用Googleフォーム」のURLを入れてください
+        // （今はGoogleのトップページになっています）
+        const reportFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdSezMq8XimmjdBuHSrCDuJin-U_KSeIEpBM0jjWEU51X2FUg/viewform?usp=dialog"; 
         // ▲▲▲ 設定ここまで ▲▲▲
 
         // 変数初期化
@@ -224,7 +228,7 @@
                     if (dataRows.length === 0) {
                         listElement.innerHTML = `
                             <div style="text-align:center; padding:3rem; color:#666;">
-                                <p>現在募集中アンケートはありません🙇‍♂️</p>
+                                <p>現在募集中アンケートはありません</p>
                                 <p style="font-size:0.8rem;">最初の投稿者になってみませんか？</p>
                             </div>
                         `;
@@ -239,13 +243,9 @@
                         const title = row[0];
                         const tag = row[1];
                         const time = row[2];
-                        const url = row[3].trim(); // 空白除去の安全策
+                        // エラー防止：データがない場合は空文字にする
+                        const url = (row[3] || "").trim(); 
 
-                        // ★★★ 修正箇所：文字化け・リンク切れを防ぐ処理 ★★★
-                        const mailSubject = encodeURIComponent("【報告】リンク切れ等の報告");
-                        const mailBody = encodeURIComponent(`以下のアンケートに問題があります：\n\nタイトル：${title}\nURL：${url}`);
-                        const reportLink = `mailto:sosug1411@gmail.com?subject=${mailSubject}&body=${mailBody}`;
-                        // 
                         const isAnswered = answeredSurveys.includes(url);
                         
                         let buttonHTML = '';
@@ -255,13 +255,22 @@
                             buttonHTML = `<button onclick="clickSurvey('${url}', this)">回答する</button>`;
                         }
 
+                        // ★★★ 修正箇所：報告ボタンを「普通のリンク」に変更 ★★★
+                        // Googleフォームを新しいタブで開くようにしました
+                        const reportLinkHTML = `
+                            <a href="${reportFormUrl}" target="_blank" rel="noopener noreferrer" 
+                               style="font-size:0.8rem; color:#999; text-decoration:underline; display:inline-block; padding:5px 0;">
+                               ⚠️ 報告
+                            </a>
+                        `;
+
                         const cardHTML = `
                             <div class="card">
                                 <div class="card-info">
                                     <h3>${title}</h3>
                                     <div class="tags"><span class="tag">${tag}</span><span class="tag">${time}</span></div>
                                     <div style="margin-top: 0.5rem;">
-                                        <a href="${reportLink}" style="font-size:0.8rem; color:#999; text-decoration:underline;">⚠️ 報告</a>
+                                        ${reportLinkHTML}
                                     </div>
                                 </div>
                                 ${buttonHTML}
@@ -285,16 +294,11 @@
             const completeArea = document.getElementById('status-complete');
 
             if (remaining <= 0) {
-                // 達成時：達成エリアを表示、未達成エリアを隠す
                 incompleteArea.style.display = 'none';
                 completeArea.style.display = 'block';
-                
-                // 登録ボタンのイベント設定
                 const activeBtn = document.getElementById('activePostBtn');
                 activeBtn.onclick = function() { window.open(postFormUrl, '_blank'); };
-
             } else {
-                // 未達成時
                 incompleteArea.style.display = 'block';
                 completeArea.style.display = 'none';
                 document.getElementById('pointsNeeded').innerText = remaining;
@@ -308,18 +312,16 @@
             points++;
             localStorage.setItem('sotsuron_points', points);
             
-            // ★先にリストに追加して保存
             answeredSurveys.push(url);
             localStorage.setItem('anke_share_answered_list', JSON.stringify(answeredSurveys));
 
-            // ★ボタンの見た目を即変更
             btnElement.innerText = "回答済み";
             btnElement.disabled = true;
             btnElement.style.backgroundColor = "#ccc";
             btnElement.style.cursor = "default";
             btnElement.onclick = null;
 
-            updateDisplay(); // ここでエラーが出なくなります
+            updateDisplay();
             window.open(url, '_blank');
         }
 
