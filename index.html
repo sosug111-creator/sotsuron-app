@@ -9,6 +9,8 @@
       gtag('config', 'G-9RG9T3E5N9');
     </script>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anke Share - アンケート相互回答プラットフォーム</title>
 
@@ -22,125 +24,103 @@
     <link rel="icon" type="image/png" href="favicon.svg">
     
     <style>
-        /* 基本設定 */
-        :root { --primary: #4f46e5; --bg: #f3f4f6; --card-bg: #ffffff; --text: #1f2937; }
+        /* モダンデザインCSS */
+        :root {
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --bg: #f8fafc;
+            --text: #334155;
+            --card-bg: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
         body {
-            font-family: "Helvetica Neue", Arial, sans-serif;
+            font-family: "Noto Sans JP", sans-serif;
             background-color: var(--bg); color: var(--text);
-            margin: 0; padding: 0; line-height: 1.6; padding-top: 80px; 
+            margin: 0; padding: 0; padding-top: 80px;
+            -webkit-font-smoothing: antialiased;
         }
+
         header {
-            background-color: white; padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px);
+            padding: 0.8rem 1.5rem; border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex; justify-content: space-between; align-items: center;
-            position: fixed; top: 0; left: 0; width: 100%;
-            box-sizing: border-box; z-index: 1000; 
+            position: fixed; top: 0; left: 0; width: 100%; box-sizing: border-box; z-index: 1000;
         }
-        .logo { font-weight: bold; font-size: 1.5rem; color: var(--primary); white-space: nowrap; }
-        .status-bar { font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; }
-        .point-box { background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; margin-left: 10px; white-space: nowrap; }
-        
-        .container { max-width: 800px; margin: 0 auto; padding: 1rem; }
-        .hero { text-align: center; margin-bottom: 2rem; padding-top: 1rem;}
-        .hero h3 { margin: 0; color: #4b5563; }
-        
-        .survey-list { display: grid; gap: 1rem; }
-        .card {
-            background: var(--card-bg); padding: 1.5rem;
-            border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            display: flex; justify-content: space-between; align-items: center;
+        .logo {
+            font-weight: 800; font-size: 1.4rem;
+            background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: -0.05em;
         }
-        .card:hover { transform: translateY(-3px); }
-        .card-info h3 { margin: 0 0 0.5rem 0; font-size: 1.1rem; }
-        .tags { font-size: 0.8rem; color: #6b7280; }
-        .tag { background: #e5e7eb; padding: 2px 8px; border-radius: 4px; margin-right: 5px; }
-        
-        button {
-            background-color: var(--primary); color: white; border: none;
-            padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;
-            font-weight: bold; white-space: nowrap; min-width: 100px; 
-        }
-        button:hover { opacity: 0.9; }
-        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .status-bar { font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .point-box { background: var(--text); color: white; padding: 4px 12px; border-radius: 9999px; font-size: 0.8rem; white-space: nowrap; }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 1.5rem; }
 
         .my-post-area {
-            background: #e0e7ff; padding: 1.5rem; border-radius: 12px;
-            text-align: center; margin-bottom: 2rem;
+            background: white; border-radius: 20px; padding: 2rem;
+            text-align: center; margin-bottom: 2.5rem; box-shadow: var(--shadow-lg); border: 1px solid #e2e8f0;
         }
+        .my-post-area h2 { margin: 0 0 1rem 0; font-size: 1.2rem; color: #1e293b; }
 
-        /* スマホ用設定 */
+        .hero { text-align: center; margin-bottom: 1.5rem; }
+        .hero h3 { margin: 0; color: #64748b; font-size: 1rem; font-weight: normal; }
+
+        .survey-list { display: grid; gap: 1rem; }
+        .card {
+            background: var(--card-bg); padding: 1.25rem; border-radius: 16px;
+            box-shadow: var(--shadow-sm); border: 1px solid #f1f5f9;
+            transition: all 0.2s ease; display: flex; justify-content: space-between; align-items: center;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: #e2e8f0; }
+        .card-info h3 { margin: 0 0 0.5rem 0; font-size: 1rem; line-height: 1.5; color: #1e293b; }
+        .tags { font-size: 0.75rem; color: #64748b; display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-weight: 500; }
+
+        button {
+            background: var(--primary-gradient); color: white; border: none; padding: 0.6rem 1.2rem;
+            border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 0.9rem;
+            white-space: nowrap; min-width: 100px; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);
+            transition: transform 0.1s;
+        }
+        button:hover { opacity: 0.95; transform: scale(1.02); }
+        button:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; transform: none; }
+
+        .share-area { text-align: center; margin: 2rem 0; }
+        .share-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 10px 20px; border-radius: 9999px;
+            color: white; text-decoration: none; font-weight: bold;
+            margin: 0 5px; font-size: 0.85rem; cursor: pointer; border: none; box-shadow: var(--shadow-sm);
+        }
+        .btn-x { background: #000; }
+        .btn-line { background: #06c755; }
+
         @media (max-width: 600px) {
-            header { padding: 0.8rem 1rem; flex-direction: column; gap: 10px; height: auto; }
+            header { padding: 0.8rem 1rem; flex-direction: column; gap: 10px; height: auto; backdrop-filter: none; background: rgba(255,255,255,0.95);}
             body { padding-top: 110px; }
-            .logo { font-size: 1.3rem; }
-            .card { flex-direction: column; align-items: flex-start; }
-            .card-info { margin-bottom: 1rem; width: 100%; }
+            .card { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .card-info { width: 100%; }
             .card button { width: 100%; padding: 0.8rem; }
         }
 
-        /* ポップアップ用 */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 9999; padding: 10px; box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
         }
         .modal-content {
-            background: white; padding: 2rem; border-radius: 12px;
-            max-width: 500px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            max-height: 90vh; overflow-y: auto;
+            background: white; padding: 2rem; border-radius: 20px;
+            max-width: 450px; width: 90%; box-shadow: var(--shadow-lg);
         }
-        .modal-content h2 { margin-top: 0; color: var(--primary); text-align: center; font-size: 1.5rem; }
-        .modal-content ul { text-align: left; font-size: 0.9rem; padding-left: 1.2rem; color: #4b5563; }
-        .modal-content li { margin-bottom: 0.5rem; }
-        
-        .agree-area {
-            margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #eee; text-align: center;
-        }
-        .agree-label {
-            display: flex; align-items: center; justify-content: center;
-            gap: 10px; cursor: pointer; font-weight: bold; font-size: 0.95rem;
-        }
-        .agree-label input { transform: scale(1.3); cursor: pointer; }
-        
-        #closeModalBtn {
-            margin-top: 1rem; width: 100%; padding: 1rem; font-size: 1rem;
-            background-color: #ccc; cursor: not-allowed; transition: 0.3s;
-            border: none; border-radius: 6px; color: white;
-        }
-        #closeModalBtn.active { background-color: var(--primary); cursor: pointer; }
-
-        @media (max-width: 600px) {
-            .modal-content { padding: 1.2rem; width: 95%; }
-            .modal-content h2 { font-size: 1.3rem; }
-            .modal-content ul { padding-left: 1rem; }
-        }
-    
-    /* ▼▼▼ 追加：シェアボタンの見た目 ▼▼▼ */
-        .share-area {
-            text-align: center;
-            margin: 1rem 0 2rem 0;
-        }
-        .share-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px 20px;
-            border-radius: 30px;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            margin: 0 5px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: none;
-            transition: opacity 0.2s;
-        }
-        .share-btn:hover { opacity: 0.8; }
-        .btn-x { background-color: #000; } /* Xは黒 */
-        .btn-line { background-color: #06c755; } /* LINEは緑 */    
-    
+        .modal-content h2 { margin-top: 0; color: #1e293b; text-align: center; font-size: 1.3rem; }
+        .modal-content ul { font-size: 0.9rem; color: #475569; padding-left: 1.2rem; }
+        .modal-content li { margin-bottom: 0.6rem; }
+        .agree-area { border-top: 1px solid #f1f5f9; margin-top: 1.5rem; padding-top: 1.5rem; text-align: center;}
+        #closeModalBtn { width: 100%; margin-top: 1rem; background: #e2e8f0; color: #64748b; box-shadow: none; }
+        #closeModalBtn.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); }
     </style>
 </head>
 <body>
@@ -181,55 +161,57 @@
             <h2>あなたのアンケートを掲載</h2>
             
             <div id="status-incomplete">
-                <p>あと <span id="pointsNeeded" style="font-weight:bold; color:red; font-size:1.2rem;">3</span> つ回答すると<br>自分のアンケートを掲載できます</p>
+                <p style="color:#64748b; font-size:0.9rem; margin-bottom:1rem;">
+                    掲載まであと <span id="pointsNeeded" style="font-weight:800; color:#6366f1; font-size:1.4rem;">3</span> 回答
+                </p>
+                <div style="background:#e2e8f0; border-radius:10px; height:10px; width:100%; margin-bottom:1.5rem; overflow:hidden;">
+                    <div id="progressBar" style="background:var(--primary-gradient); width:0%; height:100%; border-radius:10px; transition: width 0.3s ease;"></div>
+                </div>
                 <button id="postBtn" disabled>条件未達成</button>
             </div>
-            
+
             <div id="status-complete" style="display: none;">
-                <p><b>条件達成！掲載可能です</b></p>
-                <button id="activePostBtn" style="background-color: #ef4444;">アンケートを登録する</button>
+                <p style="font-weight:bold; color:#10b981; margin-bottom:1rem; font-size:1.1rem;">条件達成！掲載可能です🎉</p>
+                <button id="activePostBtn" style="background-color: #ef4444; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.4);">アンケートを登録する</button>
             </div>
-            </div>
+        </div>
 
         <div class="hero">
             <h3>みんなのアンケートに回答して<br>ポイントを貯めよう</h3>
         </div>
+
         <div class="share-area">
             <p style="font-size:0.8rem; color:#666; margin-bottom:0.5rem;">友達にシェアしてアンケートを集めよう！</p>
-            
             <button class="share-btn btn-x" onclick="window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent('大学生のためのアンケート回答プラットフォーム「Anke Share」\nポイントを貯めて自分のアンケートを掲載しよう！')+'&url='+encodeURIComponent(location.href), '_blank')">
                 X でシェア
             </button>
-
             <button class="share-btn btn-line" onclick="window.open('https://social-plugins.line.me/lineit/share?url='+encodeURIComponent(location.href), '_blank')">
                 LINE で送る
             </button>
         </div>
 
-        <div class="survey-list" id="survey-list">
-            </div>
+        <div class="survey-list" id="survey-list"></div>
     </div>
 
   <script>
         // ▼▼▼ 設定エリア ▼▼▼
+        
+        // ★★★ 【重要】ここに「あなたの」スプレッドシートのURLを貼り付けてください！ ★★★
+        // （今はダミーのURLが入っているので、必ず書き換えてください）
         const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ4Qjh20XKMyAtIWUQpOlaqKfEa0mGuzdMC7q1rihKbRuDMczRJTL6wR0oY3ouipDK8uFhuVhzYwMh9/pub?output=csv";
+        
         const validPeriodDays = 14;
         const postFormUrl = "post.html";
         const requiredPoints = 3;
-        
-        // 報告用フォームのURL（ご自身で作成したURLが入っていますか確認してください）
         const reportFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdSezMq8XimmjdBuHSrCDuJin-U_KSeIEpBM0jjWEU51X2FUg/viewform?usp=dialog"; 
         // ▲▲▲ 設定ここまで ▲▲▲
 
-        // 変数初期化
         let savedPoints = localStorage.getItem('sotsuron_points');
         let points = savedPoints ? parseInt(savedPoints) : 0;
         let answeredSurveys = JSON.parse(localStorage.getItem('anke_share_answered_list')) || [];
 
-        // 画面表示更新
         updateDisplay();
 
-        // ページ読み込み完了時
         window.onload = function() {
             if(savedPoints) points = parseInt(savedPoints);
             updateDisplay();
@@ -237,16 +219,17 @@
             const listElement = document.getElementById('survey-list');
             listElement.innerHTML = '<p style="text-align:center; padding:2rem; color:#666;">データを読み込んでいます...</p>';
 
-            // キャッシュ対策をしてfetch
             fetch(sheetUrl + "&t=" + new Date().getTime())
-                .then(response => response.text())
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.text();
+                })
                 .then(text => {
                     let rows = parseCSV(text);
                     const header = rows[0];
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
 
-                    // フィルタリング
                     const dataRows = rows.slice(1).filter(row => {
                         if (row.length < 5) return false; 
                         const registeredDateStr = row[4];
@@ -279,13 +262,9 @@
                         const tag = row[1];
                         const time = row[2];
                         const url = (row[3] || "").trim();
-                        const registeredDateStr = row[4]; // 登録日
+                        const registeredDateStr = row[4];
 
-                        // ★ID作成：URLと登録日時を組み合わせて「絶対に被らないID」を作る
-                        // これで「同じURLでも別物」として扱われます
                         const uniqueId = url + "_" + registeredDateStr;
-
-                        // ★★★ 残り日数の計算 ★★★
                         const registeredDate = new Date(registeredDateStr);
                         const deadline = new Date(registeredDate);
                         deadline.setDate(deadline.getDate() + validPeriodDays);
@@ -293,44 +272,24 @@
                         const diffTime = deadline - today;
                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                        let deadlineHTML = "";
-                        if (diffDays <= 3) {
-                            deadlineHTML = `<span style="color:#ef4444; font-weight:bold; font-size:0.85rem; margin-left:8px;">🔥あと${diffDays}日</span>`;
-                        } else {
-                            deadlineHTML = `<span style="color:#6b7280; font-size:0.85rem; margin-left:8px;">あと${diffDays}日</span>`;
-                        }
-                        // ★★★ ここまで ★★★
+                        let deadlineHTML = diffDays <= 3 
+                            ? `<span style="color:#ef4444; font-weight:bold; font-size:0.85rem; margin-left:8px;">🔥あと${diffDays}日</span>`
+                            : `<span style="color:#6b7280; font-size:0.85rem; margin-left:8px;">あと${diffDays}日</span>`;
 
-                        // ★判定ロジック変更：URLではなくIDでチェック
                         const isAnswered = answeredSurveys.includes(uniqueId);
                         
-                        let buttonHTML = '';
-                        if (isAnswered) {
-                            buttonHTML = `<button disabled style="background-color:#ccc; cursor:default;">回答済み</button>`;
-                        } else {
-                            // ★重要：クリックした時に ID と URL の両方を渡すように変更
-                            buttonHTML = `<button onclick="clickSurvey('${uniqueId}', '${url}', this)">回答する</button>`;
-                        }
+                        let buttonHTML = isAnswered 
+                            ? `<button disabled style="background-color:#ccc; cursor:default;">回答済み</button>`
+                            : `<button onclick="clickSurvey('${uniqueId}', '${url}', this)">回答する</button>`;
 
-                        const reportLinkHTML = `
-                            <a href="${reportFormUrl}" target="_blank" rel="noopener noreferrer" 
-                               style="font-size:0.8rem; color:#999; text-decoration:underline; display:inline-block; padding:5px 0;">
-                               ⚠️ 報告
-                            </a>
-                        `;
+                        const reportLinkHTML = `<a href="${reportFormUrl}" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem; color:#999; text-decoration:underline; display:inline-block; padding:5px 0;">⚠️ 報告</a>`;
 
                         const cardHTML = `
                             <div class="card">
                                 <div class="card-info">
                                     <h3>${title}</h3>
-                                    <div class="tags">
-                                        <span class="tag">${tag}</span>
-                                        <span class="tag">${time}</span>
-                                        ${deadlineHTML}
-                                    </div>
-                                    <div style="margin-top: 0.5rem;">
-                                        ${reportLinkHTML}
-                                    </div>
+                                    <div class="tags"><span class="tag">${tag}</span><span class="tag">${time}</span>${deadlineHTML}</div>
+                                    <div style="margin-top: 0.5rem;">${reportLinkHTML}</div>
                                 </div>
                                 ${buttonHTML}
                             </div>
@@ -340,43 +299,42 @@
                 })
                 .catch(err => {
                     console.error(err);
-                    listElement.innerHTML = '<p style="text-align:center; color:red;">読み込みエラー<br>再読み込みしてください</p>';
+                    listElement.innerHTML = '<p style="text-align:center; color:red;">読み込みエラー<br><span style="font-size:0.8rem">スプレッドシートのURLを確認してください</span></p>';
                 });
         };
 
-        // ポイント表示の更新
         function updateDisplay() {
             document.getElementById('pointDisplay').innerText = points + " pt";
             let remaining = requiredPoints - points;
-            
+            let progressPercent = Math.min(100, (points / requiredPoints) * 100);
+            const bar = document.getElementById('progressBar');
+            if(bar) bar.style.width = progressPercent + "%";
+
             const incompleteArea = document.getElementById('status-incomplete');
             const completeArea = document.getElementById('status-complete');
-
-            if (remaining <= 0) {
-                incompleteArea.style.display = 'none';
-                completeArea.style.display = 'block';
-                const activeBtn = document.getElementById('activePostBtn');
-                activeBtn.onclick = function() { window.open(postFormUrl, '_blank'); };
-            } else {
-                incompleteArea.style.display = 'block';
-                completeArea.style.display = 'none';
-                document.getElementById('pointsNeeded').innerText = remaining;
+            
+            // エラー防止策：要素が存在する場合のみ処理
+            if(incompleteArea && completeArea) {
+                if (remaining <= 0) {
+                    incompleteArea.style.display = 'none';
+                    completeArea.style.display = 'block';
+                    const activeBtn = document.getElementById('activePostBtn');
+                    if(activeBtn) activeBtn.onclick = function() { window.open(postFormUrl, '_blank'); };
+                } else {
+                    incompleteArea.style.display = 'block';
+                    completeArea.style.display = 'none';
+                    document.getElementById('pointsNeeded').innerText = remaining;
+                }
             }
         }
 
-        // 回答ボタンクリック
-        // ▼▼▼ 修正版：IDとURLの両方を受け取る関数 ▼▼▼
         function clickSurvey(uniqueId, url, btnElement) {
             if(!confirm("アンケートページへ移動しますか？")) return;
-            
             points++;
             localStorage.setItem('sotsuron_points', points);
-            
-            // ★ここが修正点：URLではなく「ID」を保存リストに追加
             answeredSurveys.push(uniqueId);
             localStorage.setItem('anke_share_answered_list', JSON.stringify(answeredSurveys));
 
-            // ボタンを無効化
             btnElement.innerText = "回答済み";
             btnElement.disabled = true;
             btnElement.style.backgroundColor = "#ccc";
@@ -387,7 +345,6 @@
             window.open(url, '_blank');
         }
 
-        // CSVパース
         function parseCSV(text) {
             const rows = []; let row = []; let inQuote = false; let currentCell = "";
             for (let i = 0; i < text.length; i++) {
@@ -407,7 +364,6 @@
             return rows;
         }
 
-        // ポップアップ制御
         const modal = document.getElementById('welcomeModal');
         const checkbox = document.getElementById('agreeCheck');
         const closeBtn = document.getElementById('closeModalBtn');
@@ -425,7 +381,6 @@
             });
         }
   </script>
-    
     <footer style="text-align:center; padding:2rem; margin-top:2rem; font-size:0.8rem; color:#666; border-top:1px solid #ddd;">
         <p>Anke Share（アンケシェア）</p>
         <p>個人情報は運営連絡のみに使用します。<br>Google Analytics使用中。</p>

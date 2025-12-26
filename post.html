@@ -6,87 +6,233 @@
     <title>アンケート投稿 - Anke Share</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap">
+
     <style>
-        /* デザイン設定 */
-        :root { --primary: #4f46e5; --bg: #f3f4f6; --text: #1f2937; }
-        body { font-family: "Helvetica Neue", Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        
-        .container { max-width: 600px; margin: 4rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h1 { text-align: center; color: var(--primary); margin-bottom: 1rem; }
-        
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        /* デザイン設定 (index.htmlと統一) */
+        :root {
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --bg: #f8fafc;
+            --text: #334155;
+            --card-bg: #ffffff;
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: "Noto Sans JP", sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            padding-top: 80px; /* ヘッダー分 */
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ヘッダー */
+        header {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 0.8rem 1.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center; /* 投稿ページはロゴ中央寄せ */
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.4rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.05em;
+            text-decoration: none;
+        }
+
+        /* コンテナ */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* フォームカード */
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid #e2e8f0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* 入力フォーム */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
         input, select {
-            width: 100%; padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box;
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            background-color: #f8fafc;
+            transition: all 0.2s;
+            font-family: inherit;
+            color: #1e293b;
         }
-        
-        .btn-area { text-align: center; margin-top: 2rem; }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #6366f1;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* 送信ボタン */
+        .btn-area {
+            text-align: center;
+            margin-top: 2.5rem;
+        }
+
         button {
-            background-color: var(--primary); color: white; border: none; padding: 1rem 3rem;
-            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.1rem;
-            transition: 0.3s;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            width: 100%;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);
+            transition: transform 0.1s, opacity 0.2s;
         }
-        button:hover { opacity: 0.9; }
-        button:disabled { background-color: #ccc; cursor: not-allowed; }
-        
-        .back-link { display: block; text-align: center; margin-top: 1.5rem; color: #6b7280; text-decoration: none; }
+
+        button:hover {
+            opacity: 0.95;
+            transform: scale(1.02);
+        }
+
+        button:disabled {
+            background: #cbd5e1;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 戻るリンク */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        /* スマホ対応 */
+        @media (max-width: 600px) {
+            .form-card { padding: 1.5rem; }
+            button { font-size: 1rem; padding: 0.9rem; }
+        }
     </style>
 </head>
 <body>
 
+    <header>
+        <a href="index.html" class="logo">Anke Share</a>
+    </header>
+
     <div class="container">
-        <h1>アンケート登録</h1>
-        <p style="text-align:center; color:#666; margin-bottom:2rem;">
-            送信すると自動でトップページに掲載されます。<br>
-            <span style="font-size:0.9rem; color:#ef4444;">※不適切な投稿は削除されます</span>
-        </p>
+        <div class="form-card">
+            <h1>アンケート登録</h1>
+            <p class="subtitle">
+                送信すると自動でトップページに掲載されます。<br>
+                <span style="color:#ef4444; font-weight:bold; font-size:0.85rem;">※不適切な投稿は削除されます</span>
+            </p>
 
-        <form name="submit-to-google-sheet">
-            
-            <div class="form-group">
-                <label>アンケートのタイトル</label>
-                <input type="text" name="title" placeholder="例：大学生の睡眠時間に関する調査" required>
-            </div>
+            <form name="submit-to-google-sheet">
+                
+                <div class="form-group">
+                    <label>アンケートのタイトル</label>
+                    <input type="text" name="title" placeholder="例：大学生の睡眠時間に関する調査" required>
+                </div>
 
-            <div class="form-group">
-                <label>対象学部・ジャンル</label>
-                <select name="category">
-                    <option>全学部</option>
-                    <option>文学系</option>
-                    <option>経済学系</option>
-                    <option>心理学系</option>
-                    <option>社会学系</option>
-                    <option>理工学系</option>
-                    <option>その他</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label>対象学部・ジャンル</label>
+                    <select name="category">
+                        <option>全学部</option>
+                        <option>文学系</option>
+                        <option>経済学系</option>
+                        <option>心理学系</option>
+                        <option>社会学系</option>
+                        <option>理工学系</option>
+                        <option>その他</option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label>所要時間の目安</label>
-                <select name="time">
-                    <option>1分以内</option>
-                    <option>3分程度</option>
-                    <option>5分以上</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label>所要時間の目安</label>
+                    <select name="time">
+                        <option>1分以内</option>
+                        <option>3分程度</option>
+                        <option>5分以上</option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label>アンケートのURL</label>
-                <input type="url" name="url" placeholder="https://forms.gle/..." required>
-            </div>
+                <div class="form-group">
+                    <label>アンケートのURL</label>
+                    <input type="url" name="url" placeholder="https://forms.gle/..." required>
+                </div>
 
-            <div class="btn-area">
-                <button type="submit" id="submitBtn">送信する</button>
-            </div>
-        </form>
+                <div class="btn-area">
+                    <button type="submit" id="submitBtn">送信して掲載する</button>
+                </div>
+            </form>
 
-        <a href="index.html" class="back-link">トップページに戻る</a>
+            <a href="index.html" class="back-link">トップページに戻る</a>
+        </div>
     </div>
 
     <script>
-        // ★★★ ここにコピーしたURLを貼ってください！ ★★★
+        // あなたの設定済みGAS URL
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxU5KKAJtwPIOy9AM4N8M2E2s1DzDBtFHo4uYD4v5m-vHw7Ox7K5Bd9uLBXOO1FMwkSfw/exec';
-        // ★★★★★★★★★★★★★★★★★★★★★★★★★★★
 
         const form = document.forms['submit-to-google-sheet'];
         const btn = document.getElementById('submitBtn');
@@ -97,6 +243,8 @@
             // ボタンを無効化（連打防止）
             btn.disabled = true;
             btn.innerText = "送信中...";
+            btn.style.opacity = "0.7";
+            btn.style.transform = "none";
 
             fetch(scriptURL, { method: 'POST', body: new FormData(form)})
                 .then(response => {
@@ -105,9 +253,10 @@
                 })
                 .catch(error => {
                     console.error('Error!', error.message);
-                    alert('エラーが発生しました。\nもう一度お試しください。');
+                    alert('エラーが発生しました。\n通信環境を確認して、もう一度お試しください。');
                     btn.disabled = false;
-                    btn.innerText = "送信する";
+                    btn.innerText = "送信して掲載する";
+                    btn.style.opacity = "1";
                 });
         });
     </script>
