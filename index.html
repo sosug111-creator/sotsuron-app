@@ -279,32 +279,37 @@
                         const tag = row[1];
                         const time = row[2];
                         const url = (row[3] || "").trim();
-                        const registeredDateStr = row[4]; // 登録日を取得
+                        const registeredDateStr = row[4]; // 登録日
+
+                        // ★ID作成：URLと登録日時を組み合わせて「絶対に被らないID」を作る
+                        // これで「同じURLでも別物」として扱われます
+                        const uniqueId = url + "_" + registeredDateStr;
 
                         // ★★★ 残り日数の計算 ★★★
                         const registeredDate = new Date(registeredDateStr);
                         const deadline = new Date(registeredDate);
                         deadline.setDate(deadline.getDate() + validPeriodDays);
                         
-                        // 残り時間の計算（ミリ秒 → 日数）
                         const diffTime = deadline - today;
                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                        // 表示用HTMLの作成（3日以内なら赤くする）
                         let deadlineHTML = "";
                         if (diffDays <= 3) {
                             deadlineHTML = `<span style="color:#ef4444; font-weight:bold; font-size:0.85rem; margin-left:8px;">🔥あと${diffDays}日</span>`;
                         } else {
                             deadlineHTML = `<span style="color:#6b7280; font-size:0.85rem; margin-left:8px;">あと${diffDays}日</span>`;
                         }
+                        // ★★★ ここまで ★★★
 
-                        const isAnswered = answeredSurveys.includes(url);
+                        // ★判定ロジック変更：URLではなくIDでチェック
+                        const isAnswered = answeredSurveys.includes(uniqueId);
                         
                         let buttonHTML = '';
                         if (isAnswered) {
                             buttonHTML = `<button disabled style="background-color:#ccc; cursor:default;">回答済み</button>`;
                         } else {
-                            buttonHTML = `<button onclick="clickSurvey('${url}', this)">回答する</button>`;
+                            // ★重要：クリックした時に ID と URL の両方を渡すように変更
+                            buttonHTML = `<button onclick="clickSurvey('${uniqueId}', '${url}', this)">回答する</button>`;
                         }
 
                         const reportLinkHTML = `
@@ -314,7 +319,6 @@
                             </a>
                         `;
 
-                        // カードHTMLに deadlineHTML を追加しました
                         const cardHTML = `
                             <div class="card">
                                 <div class="card-info">
@@ -322,7 +326,8 @@
                                     <div class="tags">
                                         <span class="tag">${tag}</span>
                                         <span class="tag">${time}</span>
-                                        ${deadlineHTML} </div>
+                                        ${deadlineHTML}
+                                    </div>
                                     <div style="margin-top: 0.5rem;">
                                         ${reportLinkHTML}
                                     </div>
@@ -360,15 +365,18 @@
         }
 
         // 回答ボタンクリック
-        function clickSurvey(url, btnElement) {
+        // ▼▼▼ 修正版：IDとURLの両方を受け取る関数 ▼▼▼
+        function clickSurvey(uniqueId, url, btnElement) {
             if(!confirm("アンケートページへ移動しますか？")) return;
             
             points++;
             localStorage.setItem('sotsuron_points', points);
             
-            answeredSurveys.push(url);
+            // ★ここが修正点：URLではなく「ID」を保存リストに追加
+            answeredSurveys.push(uniqueId);
             localStorage.setItem('anke_share_answered_list', JSON.stringify(answeredSurveys));
 
+            // ボタンを無効化
             btnElement.innerText = "回答済み";
             btnElement.disabled = true;
             btnElement.style.backgroundColor = "#ccc";
