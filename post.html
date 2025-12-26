@@ -7,195 +7,140 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* デザイン設定 (index.htmlと統一) */
         :root {
-            --primary: #6366f1;
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            --bg: #f8fafc;
-            --text: #334155;
-            --card-bg: #ffffff;
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --bg: #f3f4f6;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
 
         body {
             font-family: "Noto Sans JP", sans-serif;
             background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            padding-top: 80px; /* ヘッダー分 */
+            color: var(--text-main);
+            margin: 0; padding: 0; padding-top: 70px;
             -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
         }
 
         /* ヘッダー */
         header {
-            background-color: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            padding: 0.8rem 1.5rem;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center; /* 投稿ページはロゴ中央寄せ */
-            position: fixed;
-            top: 0; left: 0; width: 100%;
-            box-sizing: border-box;
-            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            height: 60px;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            position: fixed; top: 0; left: 0; width: 100%; box-sizing: border-box; z-index: 1000;
         }
 
         .logo {
-            font-weight: 800;
-            font-size: 1.4rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.05em;
-            text-decoration: none;
+            font-weight: 800; font-size: 1.25rem; color: var(--primary);
+            letter-spacing: -0.02em; text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
         }
 
         /* コンテナ */
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 1.5rem;
-        }
+        .container { max-width: 600px; margin: 0 auto; padding: 1.5rem; }
 
         /* フォームカード */
         .form-card {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid #e2e8f0;
+            background: white; border-radius: 12px; padding: 2rem;
+            box-shadow: var(--shadow-md); border: 1px solid var(--border);
         }
 
         h1 {
-            text-align: center;
-            color: #1e293b;
-            margin: 0 0 0.5rem 0;
-            font-size: 1.5rem;
+            text-align: center; color: var(--text-main); margin: 0 0 0.5rem 0;
+            font-size: 1.25rem; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
         .subtitle {
-            text-align: center;
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-            line-height: 1.6;
+            text-align: center; color: var(--text-sub); font-size: 0.9rem;
+            margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
         }
 
         /* 入力フォーム */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+        .form-group { margin-bottom: 1.5rem; }
 
         label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #475569;
-            font-size: 0.95rem;
+            display: block; margin-bottom: 0.5rem; font-weight: bold;
+            color: var(--text-main); font-size: 0.9rem;
         }
+        label i { color: var(--text-sub); margin-right: 4px; width: 16px; text-align: center; }
 
         input, select {
-            width: 100%;
-            padding: 0.9rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 12px;
-            font-size: 1rem;
-            box-sizing: border-box;
-            background-color: #f8fafc;
-            transition: all 0.2s;
-            font-family: inherit;
-            color: #1e293b;
+            width: 100%; padding: 0.75rem; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 1rem; box-sizing: border-box;
+            background-color: #f8fafc; transition: all 0.2s; font-family: inherit; color: var(--text-main);
         }
 
         input:focus, select:focus {
-            outline: none;
-            border-color: #6366f1;
-            background-color: white;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            outline: none; border-color: var(--primary); background-color: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
         /* 送信ボタン */
-        .btn-area {
-            text-align: center;
-            margin-top: 2.5rem;
-        }
+        .btn-area { text-align: center; margin-top: 2rem; }
 
         button {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            padding: 1rem 3rem;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1.1rem;
-            width: 100%;
-            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);
-            transition: transform 0.1s, opacity 0.2s;
+            background: var(--primary); color: white; border: none; padding: 0.9rem;
+            border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem;
+            width: 100%; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
 
-        button:hover {
-            opacity: 0.95;
-            transform: scale(1.02);
-        }
-
-        button:disabled {
-            background: #cbd5e1;
-            box-shadow: none;
-            cursor: not-allowed;
-            transform: none;
-        }
+        button:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
 
         /* 戻るリンク */
         .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 2rem;
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            margin-top: 2rem; color: var(--text-sub); text-decoration: none;
+            font-size: 0.9rem; transition: color 0.2s;
         }
-        .back-link:hover {
-            color: var(--primary);
-        }
+        .back-link:hover { color: var(--primary); }
 
         /* スマホ対応 */
         @media (max-width: 600px) {
             .form-card { padding: 1.5rem; }
-            button { font-size: 1rem; padding: 0.9rem; }
+            header { height: 50px; }
+            body { padding-top: 60px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo">Anke Share</a>
+        <a href="index.html" class="logo"><i class="fa-solid fa-layer-group"></i> Anke Share</a>
     </header>
 
     <div class="container">
         <div class="form-card">
-            <h1>アンケート登録</h1>
+            <h1><i class="fa-solid fa-pen-to-square"></i> アンケート登録</h1>
             <p class="subtitle">
                 送信すると自動でトップページに掲載されます。<br>
-                <span style="color:#ef4444; font-weight:bold; font-size:0.85rem;">※不適切な投稿は削除されます</span>
+                <span style="color:#ef4444; font-size:0.8rem; margin-top:4px; display:inline-block;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> 公序良俗に反する投稿は削除されます
+                </span>
             </p>
 
             <form name="submit-to-google-sheet">
                 
                 <div class="form-group">
-                    <label>アンケートのタイトル</label>
+                    <label><i class="fa-solid fa-heading"></i> タイトル</label>
                     <input type="text" name="title" placeholder="例：大学生の睡眠時間に関する調査" required>
                 </div>
 
                 <div class="form-group">
-                    <label>対象学部・ジャンル</label>
+                    <label><i class="fa-solid fa-tags"></i> 対象学部・ジャンル</label>
                     <select name="category">
                         <option>全学部</option>
                         <option>文学系</option>
@@ -208,7 +153,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>所要時間の目安</label>
+                    <label><i class="fa-regular fa-clock"></i> 所要時間の目安</label>
                     <select name="time">
                         <option>1分以内</option>
                         <option>3分程度</option>
@@ -217,21 +162,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label>アンケートのURL</label>
+                    <label><i class="fa-solid fa-link"></i> アンケートのURL</label>
                     <input type="url" name="url" placeholder="https://forms.gle/..." required>
                 </div>
 
                 <div class="btn-area">
-                    <button type="submit" id="submitBtn">送信して掲載する</button>
+                    <button type="submit" id="submitBtn"><i class="fa-solid fa-paper-plane"></i> 掲載する</button>
                 </div>
             </form>
 
-            <a href="index.html" class="back-link">トップページに戻る</a>
+            <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> トップページに戻る</a>
         </div>
     </div>
 
     <script>
-        // あなたの設定済みGAS URL
+        // 設定済みのGAS URL
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxU5KKAJtwPIOy9AM4N8M2E2s1DzDBtFHo4uYD4v5m-vHw7Ox7K5Bd9uLBXOO1FMwkSfw/exec';
 
         const form = document.forms['submit-to-google-sheet'];
@@ -240,11 +185,9 @@
         form.addEventListener('submit', e => {
             e.preventDefault();
             
-            // ボタンを無効化（連打防止）
+            // ボタンを無効化
             btn.disabled = true;
-            btn.innerText = "送信中...";
-            btn.style.opacity = "0.7";
-            btn.style.transform = "none";
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 送信中...';
 
             fetch(scriptURL, { method: 'POST', body: new FormData(form)})
                 .then(response => {
@@ -255,8 +198,7 @@
                     console.error('Error!', error.message);
                     alert('エラーが発生しました。\n通信環境を確認して、もう一度お試しください。');
                     btn.disabled = false;
-                    btn.innerText = "送信して掲載する";
-                    btn.style.opacity = "1";
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> 掲載する';
                 });
         });
     </script>
